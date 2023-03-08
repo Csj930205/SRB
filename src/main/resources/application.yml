@@ -1,0 +1,25 @@
+# My-sql
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/SRB
+    username: root
+    password: tjdwns92
+
+  # JPA
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        hbm2ddl:
+          auto: update
+
+# server-port
+server:
+  port: 8888
+
+# Spotify
+spotify:
+  clientId: f75ec1f563a7429ab67fabf4a22830e6
+  clientSecret: 05a1c10f15914464838236ce41423f8e
