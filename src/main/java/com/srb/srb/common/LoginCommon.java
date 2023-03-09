@@ -27,6 +27,12 @@ public class LoginCommon {
 
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * 로그인 요청 후 성공 시 Token 발급
+     * @param memberDto
+     * @param request
+     * @return
+     */
     public Map<String, Object> loginIdPwCompare(MemberDto memberDto, HttpServletRequest request) {
         LoginLogDto loginLogDto = new LoginLogDto();
         Map<String, Object> result = new HashMap<>();

@@ -23,3 +23,9 @@ server:
 spotify:
   clientId: f75ec1f563a7429ab67fabf4a22830e6
   clientSecret: 05a1c10f15914464838236ce41423f8e
+
+#JWT
+jwt:
+  secretKey: secretKey-songBoard-authorization-jwt-manage-token
+  accessTokenTime: 60 * 30 * 1000L
+  refreshTokenTime: 60 * 60 * 7L
