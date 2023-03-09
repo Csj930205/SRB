@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 
@@ -29,7 +28,7 @@ public class SpotifyClient {
     private String clientSecret;
 
     /**
-     * 토큰발급
+     * Spotify 토큰발급
      * @return
      */
     public String getAccessToken () {
@@ -53,6 +52,11 @@ public class SpotifyClient {
         }
     }
 
+    /**
+     * 검색조건별 Spotify API 호출
+     * @param search
+     * @return
+     */
     public Map<String, Object> searchTrack(String search) {
         String token = getAccessToken();
         RestTemplate restTemplate = new RestTemplate();
@@ -74,10 +78,13 @@ public class SpotifyClient {
             JsonNode itemsNode = root.path("tracks").path("items");
 
             for (JsonNode itemNode : itemsNode) {
-                SongDto songDto = new SongDto();
-                songDto.setTitle(search);
-                songDto.setContent(itemNode.get("name").asText());
-                songRepository.save(songDto.toEntity());
+                Song detailSong = songRepository.findSongByContent(itemNode.get("name").asText());
+                if (detailSong == null) {
+                    SongDto songDto = new SongDto();
+                    songDto.setTitle(search);
+                    songDto.setContent(itemNode.get("name").asText());
+                    songRepository.save(songDto.toEntity());
+                }
             }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

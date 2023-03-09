@@ -12,11 +12,29 @@ import java.util.List;
 public class SongService {
     private final SongRepository songRepository;
 
-
+    /**
+     * 노래리스트 출력(가수 이름)
+     * @param title
+     * @return
+     */
     public List<Song> songList (String title) {
         List<Song> songList = songRepository.findSongByTitle(title);
 
         return songList;
     }
 
+    /**
+     * 노래 상세조회(제목)
+     * @param content
+     * @return
+     */
+    public Song detailSong(String content) {
+        Song detailSong = songRepository.findSongByContent(content);
+
+        if (detailSong != null) {
+            return detailSong;
+        } else {
+            return null;
+        }
+    }
 }

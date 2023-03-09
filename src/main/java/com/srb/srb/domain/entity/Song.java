@@ -10,6 +10,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "song")
@@ -44,9 +45,19 @@ public class Song {
     @UpdateTimestamp
     private LocalDateTime modifiedDate;
 
+    @OneToMany(mappedBy = "song", fetch = FetchType.LAZY)
+    private List<Article> articleList;
+
+    @OneToMany(mappedBy = "song", fetch = FetchType.LAZY)
+    private List<Review> reviews;
+
+    @OneToMany(mappedBy = "song", fetch = FetchType.LAZY)
+    private List<PersonalList> personalLists;
+
     @Builder
     public Song(Long seq, String title, String content, int category, String delYn,
-                LocalDateTime createdDate, LocalDateTime modifiedDate) {
+                LocalDateTime createdDate, LocalDateTime modifiedDate,
+                List<Article> articleList, List<Review> reviews, List<PersonalList> personalLists) {
         this.seq = seq;
         this.title = title;
         this.content = content;
@@ -54,6 +65,9 @@ public class Song {
         this.delYn = delYn;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+        this.articleList = articleList;
+        this.reviews = reviews;
+        this.personalLists = personalLists;
     }
 
 }

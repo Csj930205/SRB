@@ -8,4 +8,5 @@ import java.util.List;
 public interface SongRepository extends JpaRepository<Song, Long> {
 
     List<Song> findSongByTitle(String title);
+    Song findSongByContent(String Content);
 }
