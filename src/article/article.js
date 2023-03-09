@@ -29,7 +29,7 @@ function Article() {
                 </thead>
                 <tbody>
                 {articleList.map(item => (
-                    <tr>
+                    <tr key={item.seq}>
                         <td>{item.seq}</td>
                         <td>{item.title}</td>
                         <td>{item.content}</td>
