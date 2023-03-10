@@ -10,6 +10,7 @@ import com.srb.srb.service.MemberService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -32,7 +33,7 @@ public class TokenProvider {
 
     private Long accessTokenTime = 60 * 30 * 1000L;
 
-    private Long refreshTokenTime = 60 * 60 * 7L;
+    private Long refreshTokenTime = 60 * 60 * 7 * 1000L;
 
     private final TokenRepository tokenRepository;
 
@@ -121,12 +122,40 @@ public class TokenProvider {
     }
 
     /**
-     * 요청정보 헤더에서 토큰 추출
+     * 요청정보 쿠키에서 토큰 추출
      * @param request
      * @return
      */
     public String resolveAccessToken(HttpServletRequest request) {
-        return request.getHeader("Authorization");
+        Cookie[] getCookie = request.getCookies();
+        String authorization = null;
+        if (getCookie != null) {
+            for (Cookie cookie : getCookie) {
+                if (cookie.getName().equals("Authorization")) {
+                    authorization = cookie.getValue();
+                }
+            }
+        }
+        return authorization;
+    }
+
+    /**
+     * 쿠키 삭제
+     * @param request
+     * @param response
+     */
+    public void cookieRemove(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] getCookie = request.getCookies();
+
+        if (getCookie != null) {
+            for (Cookie cookie : getCookie) {
+                if (cookie.getName().equals("Authorization")) {
+                    cookie.setPath("/");
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                }
+            }
+        }
     }
 
     /**
@@ -170,12 +199,17 @@ public class TokenProvider {
     }
 
     /**
-     * 응답헤더에 토큰 전송(추후 쿠키로 변환 예정)
+     * 쿠키 생성
      * @param response
      * @param token
      */
     public void setHeaderAccessToken(HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie("Authorization", token);
+        cookie.setMaxAge(60 * 30);
+        cookie.setPath("/");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Authorization", token);
+        response.addCookie(cookie);
     }
 
     /**

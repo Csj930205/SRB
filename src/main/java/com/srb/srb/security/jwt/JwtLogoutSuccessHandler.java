@@ -27,7 +27,8 @@ public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
         String userId = tokenProvider.getPayloadByToken(token).get("sub");
 
         tokenProvider.deleteRefreshToken(userId);
-
+        tokenProvider.cookieRemove(request, response)
+        ;
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         Map<String, Object> body = new HashMap<>();
