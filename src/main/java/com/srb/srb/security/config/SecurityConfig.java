@@ -1,5 +1,6 @@
 package com.srb.srb.security.config;
 
+import com.srb.srb.security.jwt.JwtAccessDeniedHandler;
 import com.srb.srb.security.jwt.JwtAuthenticationFilter;
 import com.srb.srb.security.jwt.JwtExceptionFilter;
 import com.srb.srb.security.jwt.JwtLogoutSuccessHandler;
@@ -28,6 +29,8 @@ public class SecurityConfig {
     private final JwtExceptionFilter jwtExceptionFilter;
 
     private final JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
+
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     /**
      * 비밀번호 암호화
@@ -72,7 +75,7 @@ public class SecurityConfig {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
-
+        http.exceptionHandling().accessDeniedHandler(jwtAccessDeniedHandler);
 
         return http.build();
     }
