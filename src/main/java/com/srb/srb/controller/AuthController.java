@@ -44,18 +44,4 @@ public class AuthController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    /**
-     * 로그아웃
-     * @return
-     */
-    @PostMapping("logout")
-    public ResponseEntity<Map<String, Object>> logout () {
-        Map<String, Object> result = new HashMap<>();
-        result.put("result", "success");
-        result.put("code", HttpStatus.OK.value());
-        result.put("message", "로그아웃 되었습니다.");
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 }

@@ -1,5 +1,8 @@
 package com.srb.srb.security.config;
 
+import com.srb.srb.security.jwt.JwtAuthenticationFilter;
+import com.srb.srb.security.jwt.JwtExceptionFilter;
+import com.srb.srb.security.jwt.JwtLogoutSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,12 +15,19 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity(jsr250Enabled = true)
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    private final JwtExceptionFilter jwtExceptionFilter;
+
+    private final JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
 
     /**
      * 비밀번호 암호화
@@ -54,7 +64,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**").permitAll()
                 );
+        http
+                .logout()
+                .logoutUrl("/api/auth/logout")
+                .logoutSuccessHandler(jwtLogoutSuccessHandler)
+                .permitAll();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
+
 
         return http.build();
     }
