@@ -30,11 +30,9 @@ public class TokenProvider {
     @Value("${jwt.secretKey}")
     private String secretKey;
 
-    @Value("${jwt.accessTokenTime}")
-    private long accessTokenTime;
+    private Long accessTokenTime = 60 * 30 * 1000L;
 
-    @Value("${jwt.refreshTokenTime}")
-    private long refreshTokenTime;
+    private Long refreshTokenTime = 60 * 60 * 7L;
 
     private final TokenRepository tokenRepository;
 
@@ -156,7 +154,7 @@ public class TokenProvider {
      * @param token
      * @return
      */
-    public boolean refreshToeknValidationToken(String token) {
+    public boolean refreshTokenValidationToken(String token) {
         try {
             Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
             return !claimsJws.getBody().getExpiration().before(new Date());

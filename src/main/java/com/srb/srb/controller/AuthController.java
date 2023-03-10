@@ -4,6 +4,7 @@ import com.srb.srb.common.LoginCommon;
 import com.srb.srb.domain.dto.MemberDto;
 import com.srb.srb.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,8 @@ public class AuthController {
      * @return
      */
     @PostMapping("login")
-    public ResponseEntity<Map<String, Object>> login (@RequestBody MemberDto memberDto, HttpServletRequest request) {
-        Map<String, Object> result = loginCommon.loginIdPwCompare(memberDto, request);
+    public ResponseEntity<Map<String, Object>> login (@RequestBody MemberDto memberDto, HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> result = loginCommon.loginIdPwCompare(memberDto, request, response);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

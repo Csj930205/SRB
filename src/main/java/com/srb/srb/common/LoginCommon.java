@@ -2,10 +2,14 @@ package com.srb.srb.common;
 
 import com.srb.srb.domain.dto.LoginLogDto;
 import com.srb.srb.domain.dto.MemberDto;
+import com.srb.srb.domain.entity.Token;
 import com.srb.srb.repository.LoginLogRepository;
+import com.srb.srb.repository.TokenRepository;
 import com.srb.srb.security.MemberDetails;
+import com.srb.srb.security.jwt.TokenProvider;
 import com.srb.srb.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,11 +25,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LoginCommon {
 
+    private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
     private final LoginLogRepository loginLogRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+
+    private final TokenRepository tokenRepository;
 
     /**
      * 로그인 요청 후 성공 시 Token 발급
@@ -33,16 +41,28 @@ public class LoginCommon {
      * @param request
      * @return
      */
-    public Map<String, Object> loginIdPwCompare(MemberDto memberDto, HttpServletRequest request) {
+    public Map<String, Object> loginIdPwCompare(MemberDto memberDto, HttpServletRequest request, HttpServletResponse response) {
         LoginLogDto loginLogDto = new LoginLogDto();
         Map<String, Object> result = new HashMap<>();
         String ip = getClientIp(request);
         MemberDetails memberId = memberService.loadUserByUsername(memberDto.getId());
+        String getToken = tokenProvider.resolveAccessToken(request);
+        Token getRefreshToken = tokenProvider.getRefreshToken(memberId.getUsername());
 
         if (memberId.isAccountNonLocked() == true) {
             if ( passwordEncoder.matches(memberDto.getPw(), memberId.getPassword()) ) {
                 memberService.failCountClear(memberId.getUsername());
                 loginLogDto.setAccess("성공");
+
+                if (getToken == null) {
+                    Token accessToken = tokenProvider.accessTokenCreate(memberId.getMember());
+                    tokenProvider.setHeaderAccessToken(response, accessToken.getValue());
+                }
+
+                if (getRefreshToken == null) {
+                    Token refreshToken = tokenProvider.refreshTokenCreate(memberId.getMember());
+                    tokenRepository.save(refreshToken);
+                }
 
                 result.put("result", "success");
                 result.put("code", HttpStatus.OK.value());
@@ -70,6 +90,7 @@ public class LoginCommon {
 
         return result;
     }
+
 
     /**
      * 사용자 IP 추출
