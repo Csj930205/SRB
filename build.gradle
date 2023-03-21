@@ -25,6 +25,11 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-security:3.0.1'
 
+    /**
+     * WebSocket
+     */
+    implementation 'org.springframework.boot:spring-boot-starter-websocket:3.0.1'
+
 
     /**
      * JWT
